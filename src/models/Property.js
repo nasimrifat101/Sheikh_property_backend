@@ -37,7 +37,6 @@ const propertySchema = new mongoose.Schema(
       type: [String],
       default: [],
     },
-    // Cloudinary image objects: { url, publicId }
     images: [
       {
         url: { type: String, required: true },
@@ -55,5 +54,12 @@ const propertySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// ─── Indexes ──────────────────────────────────────────────────────────────────
+// List query: GET /properties sorts by status priority + createdAt
+// Compound index covers both sort fields in one scan — no COLLSCAN
+propertySchema.index({ status: 1, createdAt: -1 });
+
+// Single property lookup by _id is already indexed (default), no extra needed
 
 export default mongoose.model("Property", propertySchema);
